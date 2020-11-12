@@ -1,2 +1,2 @@
-# pytranslator
-translator using Google Translate API in Python
+# ExcelTranslator
+A simple python utility for translating texts in an Excel
