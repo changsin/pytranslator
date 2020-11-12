@@ -10,8 +10,8 @@ Just leaving it here as a reference
 
 
 class TranslatorPapago(EasyTranslator):
-    def __init__(self, from_language, to_language):
-        super(TranslatorPapago, self).__init__(from_language, to_language)
+    def __init__(self, from_language, to_language, dictionary):
+        super(TranslatorPapago, self).__init__(from_language, to_language, dictionary)
         self.client_id = "CLIENT_ID"
         self.client_secret = "CLIENT_SECRET"
 

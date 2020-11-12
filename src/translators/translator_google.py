@@ -19,26 +19,34 @@ Known issues:
     If this happens, just rerun it till you get the correct response.
 """
 
+MAX_RETRIES = 5
+
 
 class TranslatorGoogle(EasyTranslator):
-    def __init__(self, from_language, to_language):
-        super(TranslatorGoogle, self).__init__(from_language, to_language)
+    def __init__(self, from_language, to_language, dictionary):
+        super(TranslatorGoogle, self).__init__(from_language, to_language, dictionary)
         self.translator = Translator()
 
     def translate(self, text):
-        text_translated = self.translator_cache.get(text)
+        text_translated = self.dictionary.get(text)
         if not text_translated:
             text_translated = self.translator.translate(text, dest=self.to_language, src=self.from_language).text
             detected_language = self.translator.detect(text)
 
-            print("{}".format(detected_language.lang))
             # if not translated, try again
+            retries = 0
             if detected_language.lang == self.from_language and text_translated == text:
-                while text_translated == text:
-                    print("{} not translated. Trying again".format(text))
-                    text_translated = self.translator.translate(text, self.to_language, self.from_language).text
 
-            self.translator_cache[text] = text_translated
+                for i in range(MAX_RETRIES):
+                    if text_translated != text:
+                        break
+
+                    print("{} not translated. Detected as {}. Trying again".format(text, detected_language.lang))
+                    text_translated = self.translator.translate(text, self.to_language, self.from_language).text
+                    retries += 1
+
+            if retries < MAX_RETRIES:
+                self.dictionary[text] = text_translated
         else:
             print("known string")
 

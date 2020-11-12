@@ -1,11 +1,12 @@
-from openpyxl import load_workbook
+import json
+
+from json_utils import from_file, to_file
 from openpyxl import Workbook
-from translators.translator_papago import TranslatorPapago
+from openpyxl import load_workbook
 from translators.translator_google import TranslatorGoogle
-import time
 
 
-class ExcelLoader:
+class ExcelTranslator:
     def __init__(self, path, translator):
         self.path = path
         self.workbook = load_workbook(path)
@@ -24,15 +25,13 @@ class ExcelLoader:
                 id_col = 0
                 row_str = ""
                 for cell in row:
-                    if cell and cell.value:
-                        translated_text = self.translator.translate(cell.value)
-                        row_str = row_str + "\t" + str(id_col) + ":" + cell.value + "->" + translated_text + "\t"
+                    if cell and cell.value and str(cell.value).strip():
+                        translated_text = self.translator.translate(str(cell.value).strip())
+                        row_str = row_str + "\t: {}->{}".format(cell.value, translated_text)
                         cell.value = translated_text
-                        # for Papago API, ensure that you don't exceed call frequency of < 10 per second
-                        # https://developers.naver.com/notice/article/10000000000030659365
-                        # time.sleep(0.1)
 
                     id_col += 1
+                    # TODO: remove this if you want to translate the whole sheet
                     if id_col > 7:
                         break
 
@@ -47,13 +46,23 @@ class ExcelLoader:
 if __name__ == "__main__":
     # List of supported languages
     # print(googletrans.LANGUAGES)
-    translator = TranslatorGoogle(to_language="en", from_language="ko")
+
+    dictionary_path = "..\\data\\my_dictionary.json"
+    dictionary = from_file(dictionary_path)
+    translator = TranslatorGoogle(to_language="en", from_language="ko", dictionary=dictionary)
     # translator = TranslatorPapago(to_language="en", from_language="ko")
     translated = translator.translate("공지사항 리스트 표시")
     print(translated)
 
-    loader = ExcelLoader("file_path", translator)
+    excel_translator = ExcelTranslator("..\\data\\blackolive Platform_기능정의서_v1.0.xlsx", translator)
+    # excel_translator = ExcelTranslator("..\\data\\test.xlsx", translator)
 
-    for ws_name in ["Landing.1.0", "Dashboard-User.1.0", "Dashboard-Admin 1.0", "Tool 1.0"]:
-        ws = loader.get_worksheet(ws_name)
-        loader.translate_data(ws)
+    for ws in excel_translator.workbook.worksheets:
+        ws = excel_translator.get_worksheet(ws.title)
+        excel_translator.translate_data(ws)
+
+        json_dump = json.dumps(translator.dictionary)
+        to_file(dictionary_path, json_dump)
+        # print(json_dump)
+
+
