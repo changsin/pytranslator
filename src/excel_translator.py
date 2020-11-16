@@ -1,9 +1,12 @@
 import json
+import argparse
 
 from json_utils import from_file, to_file
 from openpyxl import Workbook
 from openpyxl import load_workbook
+from translators.translator_azure import TranslatorAzure
 from translators.translator_google import TranslatorGoogle
+from translators.translator_papago import TranslatorPapago
 
 
 class ExcelTranslator:
@@ -31,9 +34,6 @@ class ExcelTranslator:
                         cell.value = translated_text
 
                     id_col += 1
-                    # TODO: remove this if you want to translate the whole sheet
-                    if id_col > 7:
-                        break
 
                 if len(row_str) > 0:
                     print(str(id_row) + row_str + "\t")
@@ -44,25 +44,37 @@ class ExcelTranslator:
 
 
 if __name__ == "__main__":
+    # Create the parser
+    arg_parser = argparse.ArgumentParser()
+
+    # Add arguments
+    arg_parser.add_argument('--path', help='file path')
+    arg_parser.add_argument('--target', help='target language')
+    arg_parser.add_argument('--source', help='source language')
+    arg_parser.add_argument('--dictionary_in', help='input dictionary path')
+    arg_parser.add_argument('--dictionary_out', help='output dictionary path')
+
+    # Execute the parse_args() method
+    args = arg_parser.parse_args()
+
     # List of supported languages
     # print(googletrans.LANGUAGES)
 
-    dictionary_path = "..\\data\\my_dictionary.json"
-    dictionary = from_file(dictionary_path)
-    translator = TranslatorGoogle(to_language="en", from_language="ko", dictionary=dictionary)
-    # translator = TranslatorPapago(to_language="en", from_language="ko")
-    translated = translator.translate("공지사항 리스트 표시")
-    print(translated)
+    file_path = args.path
+    to_language = args.target
+    from_language = args.source
+    dictionary_in = from_file(args.dictionary_in)
+    dictionary_out = from_file(args.dictionary_out)
 
-    excel_translator = ExcelTranslator("..\\data\\blackolive Platform_기능정의서_v1.0.xlsx", translator)
-    # excel_translator = ExcelTranslator("..\\data\\test.xlsx", translator)
+    # translator = TranslatorAzure(to_language="en", from_language="ko", dictionary=dictionary)
+    translator = TranslatorGoogle(to_language=to_language, from_language=from_language, dictionary=dictionary_in)
+    # translator = TranslatorPapago(to_language="en", from_language="ko", dictionary=dictionary)
+
+    excel_translator = ExcelTranslator(file_path, translator)
 
     for ws in excel_translator.workbook.worksheets:
         ws = excel_translator.get_worksheet(ws.title)
         excel_translator.translate_data(ws)
 
-        json_dump = json.dumps(translator.dictionary)
-        to_file(dictionary_path, json_dump)
-        # print(json_dump)
-
-
+    json_dump = json.dumps(translator.dictionary)
+    to_file(dictionary_out, json_dump)

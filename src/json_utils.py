@@ -13,7 +13,7 @@ def from_file(path):
         return data
 
     except Exception as ex:
-        logger.error(ex)
+        print(ex)
 
 
 def to_file(file_name, data):
