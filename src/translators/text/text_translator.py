@@ -28,7 +28,7 @@ class TextTranslator(ABC):
         self.dictionary = from_file(path)
 
     def save_dictionary(self, path):
-        json_dump = json.dumps(self.translator.dictionary)
+        json_dump = json.dumps(self.dictionary)
         print("Saving dictionary to " + path)
         to_file(path, json_dump)
 
