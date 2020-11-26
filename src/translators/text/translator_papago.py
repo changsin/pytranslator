@@ -1,6 +1,7 @@
-from .easy_translator import EasyTranslator
-import urllib.request
 import json
+import urllib.request
+
+from .text_translator import TextTranslator
 
 """
 TranslatorPapago is a wrapper around Naver Open API for translation.
@@ -9,11 +10,11 @@ Just leaving it here as a reference
 """
 
 
-class TranslatorPapago(EasyTranslator):
-    def __init__(self, from_language, to_language, dictionary):
-        super(TranslatorPapago, self).__init__(from_language, to_language, dictionary)
-        self.client_id = "CLIENT_ID"
-        self.client_secret = "CLIENT_SECRET"
+class TranslatorPapago(TextTranslator):
+    def __init__(self, from_language, to_language):
+        super(TranslatorPapago, self).__init__(from_language, to_language)
+        self.client_id = "Y7qUDSyGC12z9OWJIpwx"
+        self.client_secret = "ZXLscceWFQ"
 
     def translate(self, text):
         text_translated = self.dictionary.get(text)

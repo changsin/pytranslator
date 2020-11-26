@@ -1,6 +1,6 @@
 from azure_translator import Translator
 
-from .easy_translator import EasyTranslator
+from .text_translator import TextTranslator
 
 """
 TranslatorAzure is a wrapper around Azure translator API.
@@ -10,10 +10,10 @@ TODO: doesn't work due to access denied exception
 """
 
 
-class TranslatorAzure(EasyTranslator):
-    def __init__(self, from_language, to_language, dictionary):
-        super(TranslatorAzure, self).__init__(from_language, to_language, dictionary)
-        self.translator = Translator('KEY_ID')
+class TranslatorAzure(TextTranslator):
+    def __init__(self, from_language, to_language):
+        super(TranslatorAzure, self).__init__(from_language, to_language)
+        self.translator = Translator('48581afb-4631-4753-b2f3-c351f4d8026f')
 
     def translate(self, text):
         text_translated = self.dictionary.get(text)

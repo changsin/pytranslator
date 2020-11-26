@@ -1,5 +1,6 @@
 from googletrans import Translator
-from .easy_translator import EasyTranslator
+from .text_translator import TextTranslator
+import re
 
 """
 TranslatorGoogle is a wrapper around google translate API.
@@ -22,14 +23,14 @@ Known issues:
 MAX_RETRIES = 5
 
 
-class TranslatorGoogle(EasyTranslator):
-    def __init__(self, from_language, to_language, dictionary):
-        super(TranslatorGoogle, self).__init__(from_language, to_language, dictionary)
+class TranslatorGoogle(TextTranslator):
+    def __init__(self, from_language, to_language):
+        super(TranslatorGoogle, self).__init__(from_language, to_language)
         self.translator = Translator()
 
     def translate(self, text):
         text_translated = self.dictionary.get(text)
-        if not text_translated:
+        if (not text_translated or text == text_translated) and not re.match("^[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)?$", text):
             text_translated = self.translator.translate(text, dest=self.to_language, src=self.from_language).text
             detected_language = self.translator.detect(text)
 
@@ -49,5 +50,9 @@ class TranslatorGoogle(EasyTranslator):
                 self.dictionary[text] = text_translated
         else:
             print("known string")
+
+        # if text_translated[0].islower():
+        #     text_translated = text_translated[0].upper() + text_translated[1:]
+        #     self.dictionary[text] = text_translated
 
         return text_translated
