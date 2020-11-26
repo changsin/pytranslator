@@ -19,6 +19,7 @@ if __name__ == "__main__":
     arg_parser.add_argument('--source', help='source language')
     arg_parser.add_argument('--dictionary_in', help='input dictionary path')
     arg_parser.add_argument('--dictionary_out', help='output dictionary path')
+    arg_parser.add_argument('--text', help='text')
 
     # Execute the parse_args() method
     args = arg_parser.parse_args()
@@ -33,6 +34,8 @@ if __name__ == "__main__":
 
     dictionary_path_in = args.dictionary_in
     dictionary_path_out = args.dictionary_out
+
+    text_to_translate = args.text
 
     # 1. set the text translator first
     text_translator = TranslatorGoogle(to_language=to_language,
@@ -55,19 +58,24 @@ if __name__ == "__main__":
     else:
         print("No input dictionary specified")
 
-    # 2. set the file translator next
-    file_translator = TranslatorExcel(text_translator)
-    if file_path[-4:] == "pptx":
-        print("Translating a Powerpoint file")
-        file_translator = TranslatorPpt(text_translator)
-    elif file_path[-4:] == "xlsx":
-        print("Translating an Excel file")
-    else:
-        raise Exception("Unsupported file type " + file_path)
-
     print("Translating " + from_language + " to " + to_language)
 
-    file_translator.translate(file_path)
+    if file_path:
+        file_translator = TranslatorExcel(text_translator)
+
+        # 2. set the file translator next
+        if file_path[-4:] == "pptx":
+            print("Translating a Powerpoint file")
+            file_translator = TranslatorPpt(text_translator)
+        elif file_path[-4:] == "xlsx":
+            print("Translating an Excel file")
+        else:
+            raise Exception("Unsupported file type " + file_path)
+
+        file_translator.translate(file_path)
+    else:
+        translated = text_translator.translate(text_to_translate)
+        print("Translated: " + translated)
 
     text_translator.save_dictionary(dictionary_path_out)
 
