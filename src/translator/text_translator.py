@@ -7,7 +7,7 @@ from json_utils import from_file, to_file
 class TextTranslator(ABC):
     """
     TextTranslator is an interface for public translation services.
-    The input is a text string and the output the translation.
+    The input is a translator string and the output the translation.
     """
     def __init__(self, from_language, to_language):
         self.translator = None
@@ -18,9 +18,9 @@ class TextTranslator(ABC):
 
     def translate(self, text):
         """
-        translates the text into the target language
-        :param text: input text
-        :return: output text in the target language
+        translates the translator into the target language
+        :param text: input translator
+        :return: output translator in the target language
         """
         pass
 

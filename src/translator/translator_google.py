@@ -1,6 +1,8 @@
-from googletrans import Translator
-from .text_translator import TextTranslator
 import re
+
+from googletrans import Translator
+
+from .text_translator import TextTranslator
 
 """
 TranslatorGoogle is a wrapper around google translate API.
@@ -8,13 +10,13 @@ TranslatorGoogle is a wrapper around google translate API.
 Known issues:
  1. from time to time, google translate does not respond correctly and thus returns the following errors
       File "D:\workplace\changsin\pytranslator\venv\lib\site-packages\googletrans\client.py", line 182, in translate
-        data = self._translate(text, dest, src, kwargs)
+        data = self._translate(translator, dest, src, kwargs)
       File "D:\workplace\changsin\pytranslator\venv\lib\site-packages\googletrans\client.py", line 78, in _translate
-        token = self.token_acquirer.do(text)
+        token = self.token_acquirer.do(translator)
       File "D:\workplace\changsin\pytranslator\venv\lib\site-packages\googletrans\gtoken.py", line 194, in do
         self._update()
       File "D:\workplace\changsin\pytranslator\venv\lib\site-packages\googletrans\gtoken.py", line 62, in _update
-        code = self.RE_TKK.search(r.text).group(1).replace('var ', '')
+        code = self.RE_TKK.search(r.translator).group(1).replace('var ', '')
     AttributeError: 'NoneType' object has no attribute 'group'
     
     If this happens, just rerun it till you get the correct response.
@@ -53,6 +55,6 @@ class TranslatorGoogle(TextTranslator):
 
         # if text_translated[0].islower():
         #     text_translated = text_translated[0].upper() + text_translated[1:]
-        #     self.dictionary[text] = text_translated
+        #     self.dictionary[translator] = text_translated
 
         return text_translated

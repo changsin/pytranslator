@@ -1,7 +1,7 @@
 from pptx import Presentation
 
 
-class TranslatorPpt:
+class PptHandler:
     def __init__(self, translator):
         self.translator = translator
 
@@ -12,7 +12,7 @@ class TranslatorPpt:
     def translate_payload(self, slide):
         slide_str = ""
         for shape in slide.shapes:
-            if hasattr(shape, 'text'):
+            if hasattr(shape, 'translator'):
                 if shape.text and str(shape.text).strip():
                     translated_text = self.translator.translate(str(shape.text).strip())
                     slide_str = slide_str + "\t: {}->{}".format(str(shape.text).strip(), translated_text)
@@ -27,7 +27,7 @@ class TranslatorPpt:
         for slide in presentation.slides:
             for shape in slide.shapes:
 
-                if hasattr(shape, 'text'):
+                if hasattr(shape, 'translator'):
                     self.translate_payload(slide)
 
             presentation.save(path[:-5] + "-tr" + path[-5:])

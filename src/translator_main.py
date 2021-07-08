@@ -1,12 +1,11 @@
 import argparse
 
-from json_utils import from_file
-from translators.text.translator_azure import TranslatorAzure
-from translators.text.translator_google import TranslatorGoogle
-from translators.text.translator_papago import TranslatorPapago
+from translator.translator_azure import TranslatorAzure
+from translator.translator_google import TranslatorGoogle
+from translator.translator_papago import TranslatorPapago
 
-from translators.file.translator_excel import TranslatorExcel
-from translators.file.translator_ppt import TranslatorPpt
+from file_handler.excel_handler import ExcelHandler
+from file_handler.ppt_handler import PptHandler
 
 if __name__ == "__main__":
     # Create the parser
@@ -33,7 +32,8 @@ if __name__ == "__main__":
     from_language = args.source
 
     dictionary_path_in = args.dictionary_in
-    dictionary_path_out = args.dictionary_out
+    dictionary_path_out = args.dictionary_out if args.dictionary_in else "dictionary_{}_{}.json".format(from_language,
+                                                                                                    to_language)
 
     text_to_translate = args.text
 
@@ -61,12 +61,12 @@ if __name__ == "__main__":
     print("Translating " + from_language + " to " + to_language)
 
     if file_path:
-        file_translator = TranslatorExcel(text_translator)
+        file_translator = ExcelHandler(text_translator)
 
         # 2. set the file translator next
         if file_path[-4:] == "pptx":
             print("Translating a Powerpoint file")
-            file_translator = TranslatorPpt(text_translator)
+            file_translator = PptHandler(text_translator)
         elif file_path[-4:] == "xlsx":
             print("Translating an Excel file")
         else:

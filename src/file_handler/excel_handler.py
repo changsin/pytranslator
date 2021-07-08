@@ -1,7 +1,7 @@
 from openpyxl import load_workbook
 
 
-class TranslatorExcel:
+class ExcelHandler:
     def __init__(self, translator):
         self.translator = translator
 
@@ -15,7 +15,9 @@ class TranslatorExcel:
                 row_str = ""
                 for cell in row:
                     if cell and cell.value and str(cell.value).strip():
-                        translated_text = self.translator.translate(str(cell.value).strip())
+                        to_translate = str(cell.value).strip()
+                        print(to_translate)
+                        translated_text = self.translator.translate(to_translate)
                         row_str = row_str + "\t: {}->{}".format(cell.value, translated_text)
                         cell.value = translated_text
 

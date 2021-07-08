@@ -22,7 +22,7 @@ class TranslatorPapago(TextTranslator):
             return text_translated
 
         text_escaped = urllib.parse.quote(text)
-        query_text = "source={}&target={}&text={}".format(self.from_language, self.to_language, text_escaped)
+        query_text = "source={}&target={}&translator={}".format(self.from_language, self.to_language, text_escaped)
         url = "https://openapi.naver.com/v1/papago/n2mt"
         request = urllib.request.Request(url)
         request.add_header("X-Naver-Client-Id", self.client_id)
@@ -42,7 +42,7 @@ class TranslatorPapago(TextTranslator):
             response_json = json.loads(response_json)
             text_translated = response_json['message']['result']['translatedText']
 
-            # save the translated text to the dictionary
+            # save the translated translator to the dictionary
             self.dictionary[text] = text_translated
 
             return text_translated
