@@ -1,5 +1,8 @@
+import pptx.shapes.graphfrm
 from pptx import Presentation
-
+from pptx.shapes.graphfrm import GraphicFrame, Table
+from pptx.shapes.autoshape import Shape
+from pptx.enum.shapes import MSO_SHAPE_TYPE
 
 class PptHandler:
     def __init__(self, translator):
@@ -10,24 +13,41 @@ class PptHandler:
             paragraph.font.name = font_name
 
     def translate_payload(self, slide):
-        slide_str = ""
-        for shape in slide.shapes:
-            if hasattr(shape, 'translator'):
-                if shape.text and str(shape.text).strip():
-                    translated_text = self.translator.translate(str(shape.text).strip())
-                    slide_str = slide_str + "\t: {}->{}".format(str(shape.text).strip(), translated_text)
-                    if translated_text:
-                        shape.text = translated_text
-                    # self.set_font(shape, 'Gulim')
+        def _translate_text(obj):
+            if obj.text and str(obj.text).strip():
+                translated_text = self.translator.translate(obj.text)
+                print("\t: {}->{}".format(obj.text, translated_text))
+                if translated_text:
+                    obj.text = translated_text
 
-                    print(slide_str)
+        print(len(slide.shapes))
+        for shape in slide.shapes:
+            if isinstance(shape, Shape):
+                _translate_text(shape)
+                # self.set_font(shape, 'Gulim')
+                # pass
+            elif isinstance(shape, GraphicFrame):
+                if shape.shape_type == MSO_SHAPE_TYPE.TABLE:
+                    for row in shape.table.rows:
+                        for cell in row.cells:
+                            _translate_text(cell)
+                else:
+                    if shape.shape_type == MSO_SHAPE_TYPE.EMBEDDED_OLE_OBJECT:
+                        pass
+                    else:
+                        print("### Unknown GraphicFrame type", type(shape), shape)
+            else:
+                if isinstance(shape, pptx.shapes.connector.Connector):
+                    pass
+                else:
+                    print("### Unknown GraphicFrame type", type(shape), shape)
 
     def translate(self, path):
         presentation = Presentation(path)
-        for slide in presentation.slides:
-            for shape in slide.shapes:
+        print(len(presentation.slides))
+        for slide, id in zip(presentation.slides, range(5)):
+            print(id)
+            self.translate_payload(slide)
+            id += 1
 
-                if hasattr(shape, 'translator'):
-                    self.translate_payload(slide)
-
-            presentation.save(path[:-5] + "-tr" + path[-5:])
+        presentation.save(path[:-5] + "-tr" + path[-5:])
