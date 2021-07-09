@@ -22,7 +22,6 @@ class PptHandler:
                 if translated:
                     obj.text = translated
 
-        print(len(slide.shapes))
         for shape in slide.shapes:
             if shape.has_text_frame:
                 for paragraph in shape.text_frame.paragraphs:
@@ -33,13 +32,13 @@ class PptHandler:
                     for cell in row.cells:
                         _translate_text(cell)
             else:
-                print("Unknown type")
+                print("Unsupported type {}".format(shape))
 
     def translate(self, path):
         presentation = Presentation(path)
         print(len(presentation.slides))
-        for slide, id in zip(presentation.slides, range(5)):
-            print(id)
+        for slide, id in zip(presentation.slides, range(len(presentation.slides))):
+            print("slide", id + 1)
             self.translate_payload(slide)
             id += 1
 
