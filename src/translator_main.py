@@ -32,8 +32,8 @@ if __name__ == "__main__":
     from_language = args.source
 
     dictionary_path_in = args.dictionary_in
-    dictionary_path_out = args.dictionary_out if args.dictionary_in else "dictionary_{}_{}.json".format(from_language,
-                                                                                                    to_language)
+    dictionary_path_out = args.dictionary_out if args.dictionary_out else "dictionary_{}_{}.json".format(from_language,
+                                                                                                         to_language)
 
     text_to_translate = args.text
 
